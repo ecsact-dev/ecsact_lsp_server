@@ -66,22 +66,6 @@ auto main(int argc, char* argv[]) -> int {
 	ecsact_lsp::workspace_manager workspace_manager(manager);
 
 	manager.set_request_handler("initialize", [&](json params) -> json {
-		manager.show_message(
-			ecsact_lsp::message_type::error,
-			"Tell me about it",
-			std::vector{
-				ecsact_lsp::message_action_item{"hello"},
-				ecsact_lsp::message_action_item{"world"},
-			},
-			[&](auto msg) {
-				if(msg) {
-					manager.log_message(
-						ecsact_lsp::message_type::error,
-						"Got: " + msg->title
-					);
-				}
-			}
-		);
 		return nlohmann::json{
 			{
 				"capabilities",
@@ -113,6 +97,10 @@ auto main(int argc, char* argv[]) -> int {
 				},
 			},
 		};
+	});
+
+	manager.add_notification_listener("initialized", [&](json) {
+
 	});
 
 	bool shutdown_requested = false;

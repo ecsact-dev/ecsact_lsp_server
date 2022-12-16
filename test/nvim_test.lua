@@ -13,7 +13,7 @@ require("lspconfig").ecsact.setup {
 	root_dir = function()
 		return vim.fn.getcwd()
 	end,
-	cmd = {cmd},
+	cmd = {cmd, "--stdio"},
 }
 
 vim.cmd [[:LspStop ecsact]]

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 #include "nlohmann/json.hpp"
 
 namespace ecsact_lsp {
@@ -87,6 +88,51 @@ struct full_text_document_content_change_event {
 	std::string text;
 
 	NLOHMANN_DEFINE_TYPE_INTRUSIVE(full_text_document_content_change_event, text);
+};
+
+/**
+ * @SEE:
+ * https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position
+ */
+struct position {
+	unsigned line;
+	unsigned character;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(position, line, character);
+};
+
+/**
+ * @SEE:
+ * https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#range
+ */
+struct range {
+	position start;
+	position end;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(range, start, end);
+};
+
+/**
+ * @SEE:
+ * https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnosticSeverity
+ */
+enum class diagnostic_severity {
+	error = 1,
+	warning = 2,
+	information = 3,
+	hint = 4,
+};
+
+/**
+ * @SEE:
+ * https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#diagnostic
+ */
+struct diagnostic {
+	ecsact_lsp::range   range;
+	diagnostic_severity severity;
+	std::string         message;
+
+	NLOHMANN_DEFINE_TYPE_INTRUSIVE(diagnostic, range, severity, message);
 };
 
 } // namespace ecsact_lsp

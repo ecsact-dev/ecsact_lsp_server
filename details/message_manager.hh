@@ -5,6 +5,7 @@
 #include <map>
 #include <functional>
 #include <unordered_map>
+#include <iostream>
 #include "nlohmann/json.hpp"
 
 #include "./messages.hh"
@@ -24,8 +25,13 @@ class message_manager {
 	std::mutex                               _req_callbacks_mutex;
 	std::map<int, std::function<void(json)>> _req_callbacks;
 
-	std::unordered_multimap<std::string, std::function<void(json)>> _listeners;
-	std::unordered_map<std::string, std::function<json(json)>> _request_handlers;
+	using listeners_t =
+		std::unordered_multimap<std::string, std::function<void(const json&)>>;
+	listeners_t _listeners;
+
+	using request_handlers_t =
+		std::unordered_map<std::string, std::function<json(json)>>;
+	request_handlers_t _request_handlers;
 
 	auto _pop_req_callback(int req_id) {
 		auto lk = std::unique_lock(_req_callbacks_mutex);
@@ -79,19 +85,29 @@ public:
 
 		_receiver.accept_one([this](json msg) {
 			_active_acceptor = false;
+			_active_acceptor.notify_all();
 			if(msg.contains("method")) {
 				auto method = msg.at("method").get<std::string>();
-				if(_request_handlers.contains(method)) {
-					_send_response(
-						msg.at("id").get<int>(),
-						_request_handlers.at(method)(msg["params"])
-					);
+				auto params = msg["params"];
+
+				if(msg.contains("id")) {
+					if(_request_handlers.contains(method)) {
+						_send_response(
+							msg.at("id").get<int>(),
+							_request_handlers.at(method)(std::move(params))
+						);
+					} else {
+						_send_error_response(
+							std::move(msg),
+							lsp_error_code::method_not_found,
+							"Method '" + method + "' unimplemented"
+						);
+					}
 				} else {
-					_send_error_response(
-						std::move(msg),
-						lsp_error_code::method_not_found,
-						"Method '" + method + "' unimplemented"
-					);
+					auto [itr, last] = _listeners.equal_range(method);
+					for(; itr != last; ++itr) {
+						itr->second(params);
+					}
 				}
 			} else if(msg.contains("id")) {
 				if(msg.at("id").is_number_integer()) {
@@ -175,7 +191,8 @@ public:
 		return send_request(
 			"window/showMessageRequest",
 			std::move(params),
-			[callback = std::move(callback)](json result) {
+			[callback = std::move(callback)](json response) {
+				auto result = response["result"];
 				if(result.is_null()) {
 					callback({});
 				} else {
@@ -200,8 +217,8 @@ public:
 	}
 
 	auto add_notification_listener(
-		std::string               method,
-		std::function<void(json)> listener
+		std::string                      method,
+		std::function<void(const json&)> listener
 	) -> void {
 		_listeners.insert({method, std::move(listener)});
 	}
