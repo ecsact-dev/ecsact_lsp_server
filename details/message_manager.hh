@@ -68,7 +68,6 @@ public:
 	using request_callback = std::function<void(json)>;
 
 	message_manager(Sender&& sender, Receiver&& receiver)
-		requires(send_interface<message_manager<Sender, Receiver>>)
 		: _sender(std::forward<Sender>(sender))
 		, _receiver(std::forward<Receiver>(receiver)) {
 	}
