@@ -116,12 +116,7 @@ class workspace_manager {
 		}
 
 		{
-			auto parse_stack_itr = doc.parse_stacks.begin();
-			auto parse_status_itr = doc.parse_statuses.begin();
-			while(parse_stack_itr != doc.parse_stacks.end()) {
-				auto& stack = *parse_stack_itr;
-				auto& status = *parse_status_itr;
-
+			for(auto& status : doc.parse_statuses) {
 				if(ecsact_is_error_parse_status_code(status.code)) {
 					auto r = get_source_range(doc.full_text, status.error_location);
 
@@ -131,9 +126,6 @@ class workspace_manager {
 						.message{magic_enum::enum_name(status.code)},
 					});
 				}
-
-				++parse_stack_itr;
-				++parse_status_itr;
 			}
 		}
 
