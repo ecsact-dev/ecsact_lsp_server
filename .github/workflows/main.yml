@@ -18,7 +18,7 @@ jobs:
       - uses: jidicula/clang-format-action@v4.9.0
         with: { clang-format-version: "15" }
 
-  test-windows:
+  build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/cache@v3
@@ -28,9 +28,9 @@ jobs:
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
-      - run: bazel test --config=ci //...
+      - run: bazel build --config=ci //...
 
-  test-linux:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/cache@v3
@@ -40,7 +40,5 @@ jobs:
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
-      - run: bazel test --config=ci //...
-      - run: cd tests/serialize
-      - run: bazel test --config=ci //...
+      - run: bazel build --config=ci //...
 
