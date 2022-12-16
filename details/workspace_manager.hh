@@ -115,17 +115,15 @@ class workspace_manager {
 			}
 		}
 
-		{
-			for(auto& status : doc.parse_statuses) {
-				if(ecsact_is_error_parse_status_code(status.code)) {
-					auto r = get_source_range(doc.full_text, status.error_location);
+		for(auto& status : doc.parse_statuses) {
+			if(ecsact_is_error_parse_status_code(status.code)) {
+				auto r = get_source_range(doc.full_text, status.error_location);
 
-					diagnostics.push_back(diagnostic{
-						.range = r,
-						.severity = diagnostic_severity::error,
-						.message{magic_enum::enum_name(status.code)},
-					});
-				}
+				diagnostics.push_back(diagnostic{
+					.range = r,
+					.severity = diagnostic_severity::error,
+					.message{magic_enum::enum_name(status.code)},
+				});
 			}
 		}
 
