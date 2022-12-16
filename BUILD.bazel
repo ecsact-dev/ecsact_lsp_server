@@ -18,7 +18,6 @@ cc_binary(
     copts = copts,
     deps = [
         "@bazelregistry_docopt_cpp//:docopt",
-        "@boost//libs/asio",
         "@ecsact_interpret",
         "@ecsact_parse",
         "@nlohmann_json//:json",

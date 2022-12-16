@@ -7,7 +7,6 @@
 #include <charconv>
 #include <string_view>
 #include <string>
-#include <boost/asio.hpp>
 #include "docopt.h"
 #include "nlohmann/json.hpp"
 #include "nlohmann/adl_serializer.hpp"
