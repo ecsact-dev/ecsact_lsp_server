@@ -2,11 +2,15 @@ package example.diag.duplicates;
 
 component MyComponent;
 
-// This second component should be an duplicate name error
+// These should all trigger a duplicate name error
 component MyComponent;
+transient MyComponent;
+transient MyComponent;
+action MyComponent;
 
 component DuplicateFields {
 	i32 num;
+	// This field should have a duplicate name error
 	f32 num;
 }
 

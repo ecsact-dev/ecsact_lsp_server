@@ -11,22 +11,52 @@ local diagnostics_examples = vim.split(
 	'\n'
 )
 
-local view_time = 5000
+local current_index = 0
 
-for i, file in ipairs(diagnostics_examples) do
-	vim.defer_fn(function()
-		vim.cmd('edit ' .. file)
-		vim.bo.filetype = "ecsact"
+local function open_example()
+	local file = diagnostics_examples[current_index + 1]
+	vim.cmd('edit ' .. file)
+	vim.bo.filetype = "ecsact"
 
-		vim.lsp.start({
-			name = 'ecsact',
-			cmd = {cmd, "--stdio"},
-			root_dir = vim.fn.getcwd(),
-		})
-	end, view_time * (i - 1))
+	vim.lsp.start({
+		name = 'ecsact',
+		cmd = {cmd, "--stdio"},
+		root_dir = vim.fn.getcwd(),
+	})
 end
 
-vim.defer_fn(function()
-	vim.cmd('qa!')
-end, view_time * (#diagnostics_examples))
+vim.api.nvim_set_keymap('n', 'n', '', {
+	noremap = true,
+	callback = function()
+		current_index = (current_index + 1) % #diagnostics_examples
+		open_example()
+	end,
+})
+
+vim.api.nvim_set_keymap('n', 'N', '', {
+	noremap = true,
+	callback = function()
+		current_index = (current_index - 1) % #diagnostics_examples
+		open_example()
+	end,
+})
+
+vim.api.nvim_set_keymap('n', 'q', '', {
+	noremap = true,
+	callback = function()
+		vim.cmd('qa!')
+	end,
+});
+
+open_example()
+
+-- for i, file in ipairs(diagnostics_examples) do
+-- 	vim.defer_fn(function()
+--
+-- 	end, view_time * (i - 1))
+-- end
+--
+-- vim.defer_fn(function()
+-- 	vim.cmd('qa!')
+-- end, view_time * (#diagnostics_examples))
 
