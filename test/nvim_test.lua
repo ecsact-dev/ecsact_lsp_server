@@ -50,13 +50,3 @@ vim.api.nvim_set_keymap('n', 'q', '', {
 
 open_example()
 
--- for i, file in ipairs(diagnostics_examples) do
--- 	vim.defer_fn(function()
---
--- 	end, view_time * (i - 1))
--- end
---
--- vim.defer_fn(function()
--- 	vim.cmd('qa!')
--- end, view_time * (#diagnostics_examples))
-
