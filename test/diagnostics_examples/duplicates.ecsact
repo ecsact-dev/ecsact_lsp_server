@@ -1,0 +1,12 @@
+package example.diag.duplicates;
+
+component MyComponent;
+
+// This second component should be an duplicate name error
+component MyComponent;
+
+component DuplicateFields {
+	i32 num;
+	f32 num;
+}
+
