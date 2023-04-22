@@ -57,6 +57,45 @@ inline auto get_source_range(
 	return r;
 }
 
+inline auto pretty_statement_type_name(ecsact_statement_type type)
+	-> std::string {
+	switch(type) {
+		case ECSACT_STATEMENT_NONE:
+			return "none";
+		case ECSACT_STATEMENT_UNKNOWN:
+			return "unknown";
+		case ECSACT_STATEMENT_PACKAGE:
+			return "package";
+		case ECSACT_STATEMENT_IMPORT:
+			return "import";
+		case ECSACT_STATEMENT_COMPONENT:
+			return "transient";
+		case ECSACT_STATEMENT_TRANSIENT:
+			return "system";
+		case ECSACT_STATEMENT_SYSTEM:
+			return "action";
+		case ECSACT_STATEMENT_ACTION:
+			return "enum";
+		case ECSACT_STATEMENT_ENUM:
+			return "enum value";
+		case ECSACT_STATEMENT_ENUM_VALUE:
+		case ECSACT_STATEMENT_BUILTIN_TYPE_FIELD:
+		case ECSACT_STATEMENT_USER_TYPE_FIELD:
+		case ECSACT_STATEMENT_ENTITY_FIELD:
+			return "field";
+		case ECSACT_STATEMENT_SYSTEM_COMPONENT:
+			return "system capability";
+		case ECSACT_STATEMENT_SYSTEM_GENERATES:
+			return "generates";
+		case ECSACT_STATEMENT_SYSTEM_WITH_ENTITY:
+			return "with entity";
+		case ECSACT_STATEMENT_ENTITY_CONSTRAINT:
+			return "entity constraint";
+	}
+
+	return std::string{magic_enum::enum_name(type)};
+}
+
 inline auto parse_stack(
 	std::string_view               text,
 	ecsact_parse_status&           status,
@@ -78,6 +117,53 @@ inline auto parse_stack(
 	}
 
 	return text.substr(read_amount);
+}
+
+static inline auto create_eval_error_diagnostics(
+	const document_state&    doc,
+	const ecsact_statement&  statement,
+	const ecsact_eval_error& err
+) -> diagnostic {
+	using namespace std::string_literals;
+
+	if(err.code == ECSACT_EVAL_ERR_INVALID_CONTEXT) {
+		auto r = get_source_range(doc.full_text, err.relevant_content);
+		auto message = [&]() -> std::string {
+			if(err.context_type == ECSACT_STATEMENT_NONE) {
+				return pretty_statement_type_name(statement.type) +
+					" is not allowed as a top level statement"s;
+			} else {
+				return pretty_statement_type_name(statement.type) +
+					" is not allowed in "s +
+					pretty_statement_type_name(err.context_type) + " context";
+			}
+		}();
+
+		return diagnostic{
+			.range = r,
+			.severity = diagnostic_severity::error,
+			.message = message,
+		};
+	} else if(err.code != ECSACT_EVAL_OK) {
+		auto r = get_source_range(doc.full_text, err.relevant_content);
+		auto message = std::string{magic_enum::enum_name(err.code)};
+		if(err.relevant_content.length > 0) {
+			message += " ";
+			message += std::string_view{
+				err.relevant_content.data,
+				static_cast<size_t>(err.relevant_content.length),
+			};
+		}
+
+		return diagnostic{
+			.range = r,
+			.severity = diagnostic_severity::error,
+			.message = message,
+		};
+	}
+
+	assert(err.code != ECSACT_EVAL_OK);
+	return {};
 }
 
 template<send_interface Send>
@@ -104,7 +190,24 @@ class workspace_manager {
 				}
 			}
 
-			doc.next_parse_view = parse_stack(doc.next_parse_view, status, stack);
+			auto current_parse_view = doc.next_parse_view;
+			doc.next_parse_view = parse_stack(current_parse_view, status, stack);
+
+			if(!ecsact_is_error_parse_status_code(status.code)) {
+				auto& statement = stack.back();
+				if(statement.type == ECSACT_STATEMENT_UNKNOWN) {
+					auto loc = ecsact_statement_sv{
+						.data = current_parse_view.data(),
+						.length = static_cast<int32_t>(current_parse_view.length()),
+					};
+					auto r = get_source_range(doc.full_text, loc);
+					diagnostics.push_back(diagnostic{
+						.range = r,
+						.severity = diagnostic_severity::error,
+						.message{"Unknown statement"},
+					});
+				}
+			}
 		}
 
 		for(auto& status : doc.parse_statuses) {
@@ -177,26 +280,14 @@ class workspace_manager {
 
 					auto eval_err = ecsact_eval_statement(
 						*doc.package_id,
-						static_cast<int32_t>(parse_stack.size()),
-						parse_stack.data() + idx
+						static_cast<int32_t>(idx + 1),
+						parse_stack.data()
 					);
 
 					if(eval_err.code != ECSACT_EVAL_OK) {
-						auto r = get_source_range(doc.full_text, eval_err.relevant_content);
-						auto message = std::string{magic_enum::enum_name(eval_err.code)};
-						if(eval_err.relevant_content.length > 0) {
-							message += " ";
-							message += std::string_view{
-								eval_err.relevant_content.data,
-								static_cast<size_t>(eval_err.relevant_content.length),
-							};
-						}
-
-						diagnostics.push_back(diagnostic{
-							.range = r,
-							.severity = diagnostic_severity::error,
-							.message = message,
-						});
+						diagnostics.push_back(
+							create_eval_error_diagnostics(doc, statement, eval_err)
+						);
 					}
 				}
 			}
