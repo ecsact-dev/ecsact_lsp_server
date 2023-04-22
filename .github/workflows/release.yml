@@ -34,7 +34,7 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: 'bazel build --config=ci //:ecsact_lsp_server'
-      - run: 'Copy-Item .\bazel-bin\ecsact_lsp_server -Destination .\ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
+      - run: 'Copy-Item .\bazel-bin\ecsact_lsp_server.exe -Destination .\ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
       - run: 'gh release upload ${{ github.ref_name }} ./ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
