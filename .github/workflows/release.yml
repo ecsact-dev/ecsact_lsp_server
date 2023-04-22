@@ -16,7 +16,8 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: 'bazel build --config=ci //:ecsact_lsp_server'
-      - run: 'gh release upload ${{ github.ref_name }} ./bazel-bin/ecsact_lsp_server'
+      - run: 'cp ./bazel-bin/ecsact_lsp_server ecsact_lsp_server_${{ github.ref_name }}_linux_x64'
+      - run: 'gh release upload ${{ github.ref_name }} ecsact_lsp_server_${{ github.ref_name }}_linux_x64'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
@@ -33,7 +34,8 @@ jobs:
           key: ${{runner.os}}-bazel-cache
       - uses: actions/checkout@v3
       - run: 'bazel build --config=ci //:ecsact_lsp_server'
-      - run: 'gh release upload ${{ github.ref_name }} ./bazel-bin/ecsact_lsp_server.exe'
+      - run: 'Copy-Item .\bazel-bin\ecsact_lsp_server -Destination .\ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
+      - run: 'gh release upload ${{ github.ref_name }} ./ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
