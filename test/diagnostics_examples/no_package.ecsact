@@ -1,0 +1,6 @@
+
+// There should be a warning at the top of this file stating there is not a
+// package statement.
+
+component Example;
+

@@ -51,7 +51,6 @@ load("@boost//:index.bzl", "boost_http_archives")
 
 boost_http_archives()
 
-
 http_archive(
     name = "ecsact_parse",
     sha256 = "0423f00a1449bac058164726eb4530c2caee1927426e0891ae5ce366fb931aa1",
