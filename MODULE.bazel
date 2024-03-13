@@ -11,3 +11,18 @@ bazel_dep(name = "docopt.cpp", version = "0.6.2")
 bazel_dep(name = "ecsact_parse", version = "0.3.3")
 bazel_dep(name = "ecsact_runtime", version = "0.5.3")
 bazel_dep(name = "ecsact_interpret", version = "0.5.2")
+bazel_dep(name = "toolchains_llvm", version = "0.10.3")
+bazel_dep(name = "hedron_compile_commands", dev_dependency = True)
+
+git_override(
+    module_name = "hedron_compile_commands",
+    remote = "https://github.com/hedronvision/bazel-compile-commands-extractor.git",
+    commit = "204aa593e002cbd177d30f11f54cff3559110bb9",
+)
+
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+llvm.toolchain(llvm_version = "16.0.4")
+
+use_repo(llvm, "llvm_toolchain")
+register_toolchains("@llvm_toolchain//:all")
+
