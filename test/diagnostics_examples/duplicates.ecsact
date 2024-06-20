@@ -13,4 +13,3 @@ component DuplicateFields {
 	// This field should have a duplicate name error
 	f32 num;
 }
-

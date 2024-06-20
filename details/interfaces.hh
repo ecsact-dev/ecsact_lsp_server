@@ -45,4 +45,4 @@ concept send_interface = requires(Send& send) {
 		send.log_message(std::declval<message_type>(), std::declval<std::string>())
 	};
 };
-}
+} // namespace ecsact_lsp
