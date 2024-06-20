@@ -9,4 +9,3 @@ system MySystem {
 		readwrite ComponentWithAssoc;
 	}
 }
-

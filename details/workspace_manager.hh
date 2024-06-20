@@ -57,8 +57,8 @@ inline auto get_source_range(
 	return r;
 }
 
-inline auto pretty_statement_type_name(ecsact_statement_type type)
-	-> std::string {
+inline auto pretty_statement_type_name(ecsact_statement_type type
+) -> std::string {
 	switch(type) {
 		case ECSACT_STATEMENT_NONE:
 			return "none";
