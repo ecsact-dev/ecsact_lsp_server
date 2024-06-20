@@ -8,6 +8,7 @@
 #include <string_view>
 #include <ranges>
 #include "ecsact/parse.h"
+#include "ecsact/parse/statements.h"
 #include "ecsact/interpret/eval.h"
 #include "ecsact/runtime/dynamic.h"
 #include "magic_enum.hpp"
@@ -87,8 +88,8 @@ inline auto pretty_statement_type_name(ecsact_statement_type type
 			return "system capability";
 		case ECSACT_STATEMENT_SYSTEM_GENERATES:
 			return "generates";
-		case ECSACT_STATEMENT_SYSTEM_WITH_ENTITY:
-			return "with entity";
+		case ECSACT_STATEMENT_SYSTEM_WITH:
+			return "with";
 		case ECSACT_STATEMENT_ENTITY_CONSTRAINT:
 			return "entity constraint";
 	}
