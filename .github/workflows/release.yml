@@ -14,7 +14,7 @@ jobs:
             ~/.cache/bazelisk
             ~/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: 'bazel build --config=ci //:ecsact_lsp_server'
       - run: 'cp ./bazel-bin/ecsact_lsp_server ecsact_lsp_server_${{ github.ref_name }}_linux_x64'
       - run: 'gh release upload ${{ github.ref_name }} ecsact_lsp_server_${{ github.ref_name }}_linux_x64'
@@ -32,7 +32,7 @@ jobs:
             /Users/runneradmin/AppData/Local/bazelisk
             /Users/runneradmin/.cache/bazel-disk-cache
           key: ${{runner.os}}-bazel-cache
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: 'bazel build --config=ci //:ecsact_lsp_server'
       - run: 'Copy-Item .\bazel-bin\ecsact_lsp_server.exe -Destination .\ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
       - run: 'gh release upload ${{ github.ref_name }} ./ecsact_lsp_server_${{ github.ref_name }}_windows_x64.exe'
