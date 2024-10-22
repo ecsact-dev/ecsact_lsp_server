@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.2.2 - 2024-10-22
+#### Miscellaneous Chores
+- **(deps)** update ecsact repositories (#80) - (8884617) - renovate[bot]
+- **(deps)** update dependency ecsact_runtime to v0.6.9 (#79) - (7abfbe1) - renovate[bot]
+- **(deps)** update dependency ecsact_runtime to v0.6.8 (#77) - (15e0ea7) - renovate[bot]
+- **(deps)** update dependency ecsact_runtime to v0.6.7 (#75) - (4dc7ab3) - renovate[bot]
+- sync with ecsact_common (#78) - (0e8a190) - seaubot
+- sync with ecsact_common (#74) - (38b4d7d) - seaubot
+- sync with ecsact_common (#73) - (6b4ccaa) - seaubot
+- sync with ecsact_common (#72) - (26ad3a4) - seaubot
+
+- - -
+
 ## 0.2.1 - 2024-06-20
 #### Miscellaneous Chores
 - **(deps)** update dependency toolchains_llvm to v1 (#69) - (b1e8bc0) - renovate[bot]
