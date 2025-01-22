@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 0.2.3 - 2025-01-22
+#### Miscellaneous Chores
+- **(deps)** update dependency ecsact_runtime to v0.7.1 (#82) - (bcd77fd) - renovate[bot]
+- allow ecsact_runtime 0.8.x - (e356086) - Ezekiel Warren
+
+- - -
+
 ## 0.2.2 - 2024-10-22
 #### Miscellaneous Chores
 - **(deps)** update ecsact repositories (#80) - (8884617) - renovate[bot]
